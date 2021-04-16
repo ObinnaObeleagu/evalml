@@ -6,4 +6,12 @@ from .scalers import StandardScaler
 from .samplers import Undersampler
 from .column_selectors import DropColumns, SelectColumns
 from .dimensionality_reduction import LinearDiscriminantAnalysis, PCA
-from .preprocessing import DateTimeFeaturizer, DropNullColumns, LSA, TextFeaturizer, DelayedFeatureTransformer, DFSTransformer, PolynomialDetrender
+from .preprocessing import (DateTimeFeaturizer,
+                            DropNullColumns,
+                            LSA,
+                            TextFeaturizer,
+                            DelayedFeatureTransformer,
+                            DFSTransformer,
+                            PolynomialDetrender,
+                            DropNullRowsTransformer
+)

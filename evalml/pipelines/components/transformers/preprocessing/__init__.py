@@ -6,3 +6,4 @@ from .text_featurizer import TextFeaturizer
 from .delayed_feature_transformer import DelayedFeatureTransformer
 from .featuretools import DFSTransformer
 from .polynomial_detrender import PolynomialDetrender
+from .drop_null_rows_transformer import DropNullRowsTransformer
