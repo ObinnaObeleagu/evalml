@@ -142,7 +142,10 @@ def train_and_score_pipeline(pipeline, automl_config, full_X_train, full_y_train
         y_pd_encoded = y_pd.map(y_mapping)
     cv_pipeline = pipeline
     for i, (train, valid) in enumerate(automl_config.data_splitter.split(X_pd, y_pd_encoded)):
-        if pipeline.model_family == ModelFamily.ENSEMBLE and i > 0:
+        if pipeline.model_family == ModelFamily.ENSEMBLE and i == 0:
+            train = X_pd
+            valid = y_pd_encoded
+        elif pipeline.model_family == ModelFamily.ENSEMBLE and i > 0:
             # Stacked ensembles do CV internally, so we do not run CV here for performance reasons.
             logger.debug(f"Skipping fold {i} because CV for stacked ensembles is not supported.")
             break
