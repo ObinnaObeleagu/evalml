@@ -16,7 +16,7 @@ class StackedEnsembleRegressor(StackedEnsembleBase):
     supported_problem_types = [ProblemTypes.REGRESSION, ProblemTypes.TIME_SERIES_REGRESSION]
     hyperparameter_ranges = {}
     _stacking_estimator_class = StackingRegressor
-    _default_final_estimator = RidgeCV
+    _default_final_estimator = ElasticNetCV
     _default_cv = KFold
 
     def __init__(self, input_pipelines=None, final_estimator=None,
