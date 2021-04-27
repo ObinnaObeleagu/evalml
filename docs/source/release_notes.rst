@@ -2,17 +2,22 @@ Release Notes
 -------------
 **Future Releases**
     * Enhancements
+        * Have the ``OneHotEncoder`` return the transformed columns as booleans rather than floats :pr:`2170`
         * Added Oversampler transformer component to EvalML :pr:`2079`
         * Updated prediction explanations functions to allow pipelines with XGBoost estimators :pr:`2162`
     * Fixes
     * Changes
+            * Updated pipeline API to accept component graph and other class attributes as instance parameters. Old pipeline API still works but will not be supported long-term. :pr:`2091`
     * Documentation Changes
+        * Rename dataset to clarify that its gzipped but not a tarball :pr:`2183`
     * Testing Changes
+        * Use machineFL user token for dependency update bot, and add more reviewers :pr:`2189`
 
 
 .. warning::
 
     **Breaking Changes**
+        * Updated pipeline API to accept component graph and other class attributes as instance parameters. Old pipeline API still works but will not be supported long-term. Pipelines can now be initialized by specifying the component graph as the first parameter, and then passing in optional arguments such as ``custom_name``, ``parameters``, etc. For example, ``BinaryClassificationPipeline(["Random Forest Classifier"], parameters={})``.  :pr:`2091`
 
 **v0.23.0 Apr. 20, 2021**
     * Enhancements
