@@ -159,7 +159,7 @@ _not_used_in_automl = {'BaselineClassifier', 'BaselineRegressor', 'TimeSeriesBas
                        'BaselineRegressionPipeline', 'ModeBaselineMulticlassPipeline', 'BaselineMulticlassPipeline',
                        'TimeSeriesBaselineRegressionPipeline', 'TimeSeriesBaselineBinaryPipeline',
                        'TimeSeriesBaselineMulticlassPipeline', 'KNeighborsClassifier',
-                       'SVMClassifier', 'SVMRegressor', 'ARIMARegressor'}
+                       'SVMClassifier', 'SVMRegressor', 'ARIMARegressor', 'ElasticNetCVRegressor'}
 
 
 def get_importable_subclasses(base_class, used_in_automl=True):
@@ -178,7 +178,6 @@ def get_importable_subclasses(base_class, used_in_automl=True):
         List of subclasses.
     """
     all_classes = _get_subclasses(base_class)
-
     classes = []
     for cls in all_classes:
         if 'evalml.pipelines' not in cls.__module__:
