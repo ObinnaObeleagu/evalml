@@ -162,7 +162,9 @@ class ComponentGraph:
             ww.DataTable: Transformed values.
         """
         if len(self.compute_order) <= 1:
-            return infer_feature_types(X)
+            X = infer_feature_types(X)
+            self.input_feature_names.update({self.compute_order[0]: list(X.columns)})
+            return X
         component_outputs = self._compute_features(self.compute_order[:-1], X, y=y, fit=needs_fitting)
         final_component_inputs = []
         for parent in self.get_parents(self.compute_order[-1]):
@@ -207,6 +209,7 @@ class ComponentGraph:
             dict: Outputs from each component
         """
         X = infer_feature_types(X)
+        most_recent_y = y
         if len(component_list) == 0:
             return X
         output_cache = {}
@@ -228,9 +231,8 @@ class ComponentGraph:
                     elif isinstance(parent_x, ww.DataColumn):
                         parent_x = pd.Series(_convert_woodwork_types_wrapper(parent_x.to_series()), name=parent_input)
                     x_inputs.append(parent_x)
-            input_x, input_y = self._consolidate_inputs(x_inputs, y_input, X, y)
+            input_x, input_y = self._consolidate_inputs(x_inputs, y_input, X, most_recent_y)
             self.input_feature_names.update({component_name: list(input_x.columns)})
-
             if isinstance(component_instance, Transformer):
                 if fit:
                     output = component_instance.fit_transform(input_x, input_y)
@@ -238,6 +240,7 @@ class ComponentGraph:
                     output = component_instance.transform(input_x, input_y)
                 if isinstance(output, tuple):
                     output_x, output_y = output[0], output[1]
+                    most_recent_y = output_y
                 else:
                     output_x = output
                     output_y = None

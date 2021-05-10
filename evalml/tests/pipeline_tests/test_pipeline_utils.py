@@ -21,7 +21,6 @@ from evalml.pipelines.components import (
     LinearRegressor,
     LogisticRegressionClassifier,
     OneHotEncoder,
-    RandomForestClassifier,
     StackedEnsembleClassifier,
     StackedEnsembleRegressor,
     StandardScaler,
@@ -34,8 +33,7 @@ from evalml.pipelines.utils import (
     _make_component_list_from_actions,
     generate_pipeline_code,
     get_estimators,
-    make_pipeline,
-    make_pipeline_from_components
+    make_pipeline
 )
 from evalml.problem_types import ProblemTypes, is_time_series
 
@@ -68,8 +66,8 @@ def test_make_pipeline_custom_hyperparameters(problem_type):
         for problem_type in estimator_class.supported_problem_types:
             parameters = {}
             if is_time_series(problem_type):
-                parameters = {"pipeline": {"gap": 1, "max_delay": 1},
-                              "Time Series Baseline Estimator": {"gap": 1, "max_delay": 1}}
+                parameters = {"pipeline": {"date_index": "some dates", "gap": 1, "max_delay": 1},
+                              "Time Series Baseline Estimator": {"date_index": "some dates", "gap": 1, "max_delay": 1}}
 
             pipeline = make_pipeline(X, y, estimator_class, problem_type, parameters, custom_hyperparameters)
             assert pipeline.custom_hyperparameters == custom_hyperparameters
@@ -98,8 +96,8 @@ def test_make_pipeline_all_nan_no_categoricals(input_type, problem_type):
         if problem_type in estimator_class.supported_problem_types:
             parameters = {}
             if is_time_series(problem_type):
-                parameters = {"pipeline": {"gap": 1, "max_delay": 1},
-                              "Time Series Baseline Estimator": {"gap": 1, "max_delay": 1}}
+                parameters = {"pipeline": {"date_index": None, "gap": 1, "max_delay": 1},
+                              "Time Series Baseline Estimator": {"date_index": None, "gap": 1, "max_delay": 1}}
 
             pipeline = make_pipeline(X, y, estimator_class, problem_type, parameters)
             assert isinstance(pipeline, pipeline_class)
@@ -109,8 +107,6 @@ def test_make_pipeline_all_nan_no_categoricals(input_type, problem_type):
                 delayed_features = [DelayedFeatureTransformer]
             if estimator_class.model_family == ModelFamily.LINEAR_MODEL:
                 estimator_components = [StandardScaler, estimator_class]
-            elif estimator_class.model_family == ModelFamily.CATBOOST:
-                estimator_components = [estimator_class]
             else:
                 estimator_components = [estimator_class]
             assert pipeline.component_graph == [DropNullColumns, Imputer] + delayed_features + estimator_components
@@ -136,8 +132,8 @@ def test_make_pipeline(input_type, problem_type):
         if problem_type in estimator_class.supported_problem_types:
             parameters = {}
             if is_time_series(problem_type):
-                parameters = {"pipeline": {"gap": 1, "max_delay": 1},
-                              "Time Series Baseline Estimator": {"gap": 1, "max_delay": 1}}
+                parameters = {"pipeline": {"date_index": "some dates", "gap": 1, "max_delay": 1},
+                              "Time Series Baseline Estimator": {"date_index": "some dates", "gap": 1, "max_delay": 1}}
 
             pipeline = make_pipeline(X, y, estimator_class, problem_type, parameters)
             assert isinstance(pipeline, pipeline_class)
@@ -174,8 +170,8 @@ def test_make_pipeline_no_nulls(input_type, problem_type):
         if problem_type in estimator_class.supported_problem_types:
             parameters = {}
             if is_time_series(problem_type):
-                parameters = {"pipeline": {"gap": 1, "max_delay": 1},
-                              "Time Series Baseline Estimator": {"gap": 1, "max_delay": 1}}
+                parameters = {"pipeline": {"date_index": "some dates", "gap": 1, "max_delay": 1},
+                              "Time Series Baseline Estimator": {"date_index": "some dates", "gap": 1, "max_delay": 1}}
 
             pipeline = make_pipeline(X, y, estimator_class, problem_type, parameters)
             assert isinstance(pipeline, pipeline_class)
@@ -212,8 +208,8 @@ def test_make_pipeline_no_datetimes(input_type, problem_type):
         if problem_type in estimator_class.supported_problem_types:
             parameters = {}
             if is_time_series(problem_type):
-                parameters = {"pipeline": {"gap": 1, "max_delay": 1},
-                              "Time Series Baseline Estimator": {"gap": 1, "max_delay": 1}}
+                parameters = {"pipeline": {"date_index": None, "gap": 1, "max_delay": 1},
+                              "Time Series Baseline Estimator": {"date_index": None, "gap": 1, "max_delay": 1}}
 
             pipeline = make_pipeline(X, y, estimator_class, problem_type, parameters)
             assert isinstance(pipeline, pipeline_class)
@@ -247,8 +243,8 @@ def test_make_pipeline_no_column_names(input_type, problem_type):
         if problem_type in estimator_class.supported_problem_types:
             parameters = {}
             if is_time_series(problem_type):
-                parameters = {"pipeline": {"gap": 1, "max_delay": 1},
-                              "Time Series Baseline Estimator": {"gap": 1, "max_delay": 1}}
+                parameters = {"pipeline": {"date_index": None, "gap": 1, "max_delay": 1},
+                              "Time Series Baseline Estimator": {"date_index": None, "gap": 1, "max_delay": 1}}
 
             pipeline = make_pipeline(X, y, estimator_class, problem_type, parameters)
             assert isinstance(pipeline, pipeline_class)
@@ -285,8 +281,8 @@ def test_make_pipeline_text_columns(input_type, problem_type):
         if problem_type in estimator_class.supported_problem_types:
             parameters = {}
             if is_time_series(problem_type):
-                parameters = {"pipeline": {"gap": 1, "max_delay": 1},
-                              "Time Series Baseline Estimator": {"gap": 1, "max_delay": 1}}
+                parameters = {"pipeline": {"date_index": None, "gap": 1, "max_delay": 1},
+                              "Time Series Baseline Estimator": {"date_index": None, "gap": 1, "max_delay": 1}}
 
             pipeline = make_pipeline(X, y, estimator_class, problem_type, parameters)
             assert isinstance(pipeline, pipeline_class)
@@ -322,8 +318,8 @@ def test_make_pipeline_only_text_columns(input_type, problem_type):
         if problem_type in estimator_class.supported_problem_types:
             parameters = {}
             if is_time_series(problem_type):
-                parameters = {"pipeline": {"gap": 1, "max_delay": 1},
-                              "Time Series Baseline Estimator": {"gap": 1, "max_delay": 1}}
+                parameters = {"pipeline": {"date_index": None, "gap": 1, "max_delay": 1},
+                              "Time Series Baseline Estimator": {"date_index": None, "gap": 1, "max_delay": 1}}
 
             pipeline = make_pipeline(X, y, estimator_class, problem_type, parameters)
             assert isinstance(pipeline, pipeline_class)
@@ -356,8 +352,8 @@ def test_make_pipeline_only_datetime_columns(input_type, problem_type):
         if problem_type in estimator_class.supported_problem_types:
             parameters = {}
             if is_time_series(problem_type):
-                parameters = {"pipeline": {"gap": 1, "max_delay": 1},
-                              "Time Series Baseline Estimator": {"gap": 1, "max_delay": 1}}
+                parameters = {"pipeline": {"date_index": "some dates", "gap": 1, "max_delay": 1},
+                              "Time Series Baseline Estimator": {"date_index": "some dates", "gap": 1, "max_delay": 1}}
 
             pipeline = make_pipeline(X, y, estimator_class, problem_type, parameters)
             assert isinstance(pipeline, pipeline_class)
@@ -385,8 +381,8 @@ def test_make_pipeline_numpy_input(problem_type):
         if problem_type in estimator_class.supported_problem_types:
             parameters = {}
             if is_time_series(problem_type):
-                parameters = {"pipeline": {"gap": 1, "max_delay": 1},
-                              "Time Series Baseline Estimator": {"gap": 1, "max_delay": 1}}
+                parameters = {"pipeline": {"date_index": None, "gap": 1, "max_delay": 1},
+                              "Time Series Baseline Estimator": {"date_index": None, "gap": 1, "max_delay": 1}}
 
             pipeline = make_pipeline(X, y, estimator_class, problem_type, parameters)
             assert isinstance(pipeline, pipeline_class)
@@ -419,8 +415,8 @@ def test_make_pipeline_datetime_no_categorical(input_type, problem_type):
         if problem_type in estimator_class.supported_problem_types:
             parameters = {}
             if is_time_series(problem_type):
-                parameters = {"pipeline": {"gap": 1, "max_delay": 1},
-                              "Time Series Baseline Estimator": {"gap": 1, "max_delay": 1}}
+                parameters = {"pipeline": {"date_index": "soem dates", "gap": 1, "max_delay": 1},
+                              "Time Series Baseline Estimator": {"date_index": "some dates", "gap": 1, "max_delay": 1}}
 
             pipeline = make_pipeline(X, y, estimator_class, problem_type, parameters)
             assert isinstance(pipeline, pipeline_class)
@@ -446,78 +442,6 @@ def test_make_pipeline_problem_type_mismatch():
         make_pipeline(pd.DataFrame(), pd.Series(), Transformer, ProblemTypes.MULTICLASS)
 
 
-def test_make_pipeline_from_components(X_y_binary, logistic_regression_binary_pipeline_class):
-    with pytest.raises(ValueError, match="Pipeline needs to have an estimator at the last position of the component list"):
-        make_pipeline_from_components([Imputer()], problem_type='binary')
-
-    with pytest.raises(KeyError, match="Problem type 'invalid_type' does not exist"):
-        make_pipeline_from_components([RandomForestClassifier()], problem_type='invalid_type')
-
-    with pytest.raises(TypeError, match="Custom pipeline name must be a string"):
-        make_pipeline_from_components([RandomForestClassifier()], problem_type='binary', custom_name=True)
-
-    with pytest.raises(TypeError, match="Every element of `component_instances` must be an instance of ComponentBase"):
-        make_pipeline_from_components([RandomForestClassifier], problem_type='binary')
-
-    with pytest.raises(TypeError, match="Every element of `component_instances` must be an instance of ComponentBase"):
-        make_pipeline_from_components(['RandomForestClassifier'], problem_type='binary')
-
-    imp = Imputer(numeric_impute_strategy='median', random_seed=5)
-    est = RandomForestClassifier(random_seed=7)
-    pipeline = make_pipeline_from_components([imp, est], ProblemTypes.BINARY, custom_name='My Pipeline',
-                                             random_seed=15)
-    assert [c.__class__ for c in pipeline] == [Imputer, RandomForestClassifier]
-    assert [(c.random_seed == 15) for c in pipeline]
-    assert pipeline.problem_type == ProblemTypes.BINARY
-    assert pipeline.custom_name == 'My Pipeline'
-    expected_parameters = {
-        'Imputer': {
-            'categorical_impute_strategy': 'most_frequent',
-            'numeric_impute_strategy': 'median',
-            'categorical_fill_value': None,
-            'numeric_fill_value': None},
-        'Random Forest Classifier': {
-            'n_estimators': 100,
-            'max_depth': 6,
-            'n_jobs': -1}
-    }
-    assert pipeline.parameters == expected_parameters
-    assert pipeline.random_seed == 15
-
-    class DummyEstimator(Estimator):
-        name = "Dummy!"
-        model_family = "foo"
-        supported_problem_types = [ProblemTypes.BINARY]
-        parameters = {'bar': 'baz'}
-        hyperparameter_ranges = None
-    random_seed = 42
-    pipeline = make_pipeline_from_components([DummyEstimator(random_seed=3)],
-                                             ProblemTypes.BINARY,
-                                             random_seed=random_seed)
-    components_list = [c for c in pipeline]
-    assert len(components_list) == 1
-    assert isinstance(components_list[0], DummyEstimator)
-    assert components_list[0].random_seed == random_seed
-    expected_parameters = {'Dummy!': {'bar': 'baz'}}
-    assert pipeline.parameters == expected_parameters
-    assert pipeline.random_seed == random_seed
-
-    X, y = X_y_binary
-    pipeline = logistic_regression_binary_pipeline_class(parameters={"Logistic Regression Classifier": {"n_jobs": 1}},
-                                                         random_seed=42)
-    component_instances = [c for c in pipeline]
-    new_pipeline = make_pipeline_from_components(component_instances, ProblemTypes.BINARY)
-    pipeline.fit(X, y)
-    predictions = pipeline.predict(X)
-    new_pipeline.fit(X, y)
-    new_predictions = new_pipeline.predict(X)
-    assert np.array_equal(predictions, new_predictions)
-    assert np.array_equal(pipeline.feature_importance, new_pipeline.feature_importance)
-    assert pipeline.parameters == new_pipeline.parameters
-    for component, new_component in zip(pipeline._component_graph, new_pipeline._component_graph):
-        assert isinstance(new_component, type(component))
-
-
 @pytest.mark.parametrize("problem_type", [ProblemTypes.BINARY, ProblemTypes.MULTICLASS, ProblemTypes.REGRESSION])
 def test_stacked_estimator_in_pipeline(problem_type, X_y_binary, X_y_multi, X_y_regression,
                                        stackable_classifiers,
@@ -529,21 +453,21 @@ def test_stacked_estimator_in_pipeline(problem_type, X_y_binary, X_y_multi, X_y_
         X, y = X_y_binary
         base_pipeline_class = BinaryClassificationPipeline
         stacking_component_name = StackedEnsembleClassifier.name
-        input_pipelines = [make_pipeline_from_components([classifier], problem_type) for classifier in stackable_classifiers]
+        input_pipelines = [BinaryClassificationPipeline([classifier]) for classifier in stackable_classifiers]
         comparison_pipeline = logistic_regression_binary_pipeline_class(parameters={"Logistic Regression Classifier": {"n_jobs": 1}})
         objective = 'Log Loss Binary'
     elif problem_type == ProblemTypes.MULTICLASS:
         X, y = X_y_multi
         base_pipeline_class = MulticlassClassificationPipeline
         stacking_component_name = StackedEnsembleClassifier.name
-        input_pipelines = [make_pipeline_from_components([classifier], problem_type) for classifier in stackable_classifiers]
+        input_pipelines = [MulticlassClassificationPipeline([classifier]) for classifier in stackable_classifiers]
         comparison_pipeline = logistic_regression_multiclass_pipeline_class(parameters={"Logistic Regression Classifier": {"n_jobs": 1}})
         objective = 'Log Loss Multiclass'
     elif problem_type == ProblemTypes.REGRESSION:
         X, y = X_y_regression
         base_pipeline_class = RegressionPipeline
         stacking_component_name = StackedEnsembleRegressor.name
-        input_pipelines = [make_pipeline_from_components([regressor], problem_type) for regressor in stackable_regressors]
+        input_pipelines = [RegressionPipeline([regressor]) for regressor in stackable_regressors]
         comparison_pipeline = linear_regression_pipeline_class(parameters={"Linear Regressor": {"n_jobs": 1}})
         objective = 'R2'
     parameters = {
@@ -579,6 +503,36 @@ def test_make_component_list_from_actions():
                DataCheckAction(DataCheckActionCode.IMPUTE_COL, metadata={"column": None, "is_target": True, "impute_strategy": "most_frequent"})]
     assert _make_component_list_from_actions(actions) == [DropColumns(columns=['some col']),
                                                           TargetImputer(impute_strategy="most_frequent")]
+
+
+@pytest.mark.parametrize("samplers", [None, "Undersampler", "SMOTE Oversampler", "SMOTENC Oversampler", "SMOTEN Oversampler"])
+@pytest.mark.parametrize("problem_type", ['binary', 'multiclass', 'regression'])
+def test_make_pipeline_samplers(problem_type, samplers, X_y_binary, X_y_multi, X_y_regression, has_minimal_dependencies):
+    if problem_type == 'binary':
+        X, y = X_y_binary
+    elif problem_type == 'multiclass':
+        X, y = X_y_multi
+    else:
+        X, y = X_y_regression
+    estimators = get_estimators(problem_type=problem_type)
+
+    for estimator in estimators:
+        if problem_type == 'regression' and samplers is not None:
+            with pytest.raises(ValueError, match='Sampling is unsupported for'):
+                make_pipeline(X, y, estimator, problem_type, sampler_name=samplers)
+        else:
+            pipeline = make_pipeline(X, y, estimator, problem_type, sampler_name=samplers)
+            if has_minimal_dependencies and samplers is not None:
+                samplers = 'Undersampler'
+            # check that we do add the sampler properly
+            if samplers is not None and problem_type != 'regression':
+                # we add the sampler before the scaler if it exists
+                if pipeline.component_graph[-2].name == 'Standard Scaler':
+                    assert pipeline.component_graph[-3].name == samplers
+                else:
+                    assert pipeline.component_graph[-2].name == samplers
+            else:
+                assert not any('sampler' in comp.name for comp in pipeline.component_graph)
 
 
 def test_get_estimators(has_minimal_dependencies):
@@ -637,7 +591,7 @@ def test_generate_code_pipeline_errors():
         generate_pipeline_code([Imputer(), LogisticRegressionClassifier()])
 
 
-def test_generate_code_pipeline_json_errors():
+def test_generate_code_pipeline_json_with_objects():
     class CustomEstimator(Estimator):
         name = "My Custom Estimator"
         hyperparameter_ranges = {}
@@ -652,101 +606,55 @@ def test_generate_code_pipeline_json_errors():
                              component_obj=None,
                              random_seed=random_seed)
 
-    class MockBinaryPipelineTransformer(BinaryClassificationPipeline):
-        custom_name = "Mock Binary Pipeline with Transformer"
-        component_graph = ['Imputer', CustomEstimator]
+    component_graph = ['Imputer', CustomEstimator]
+    pipeline = BinaryClassificationPipeline(component_graph, custom_name="Mock Binary Pipeline with Transformer",
+                                            parameters={'My Custom Estimator': {'numpy_arg': np.array([0])}})
+    generated_pipeline_code = generate_pipeline_code(pipeline)
+    assert generated_pipeline_code == "from evalml.pipelines.binary_classification_pipeline import BinaryClassificationPipeline\n" \
+        "pipeline = BinaryClassificationPipeline(component_graph=['Imputer', CustomEstimator], " \
+        "parameters={'Imputer':{'categorical_impute_strategy': 'most_frequent', 'numeric_impute_strategy': 'mean', 'categorical_fill_value': None, 'numeric_fill_value': None}, " \
+        "'My Custom Estimator':{'random_arg': False, 'numpy_arg': array([0])}}, custom_name='Mock Binary Pipeline with Transformer', random_seed=0)"
 
-        def __init__(self, parameters, random_seed=0):
-            super().__init__(self.component_graph, parameters=parameters, custom_name=self.custom_name, custom_hyperparameters=None, random_seed=random_seed)
-
-    pipeline = MockBinaryPipelineTransformer({})
-    generate_pipeline_code(pipeline)
-
-    pipeline = MockBinaryPipelineTransformer({'My Custom Estimator': {'numpy_arg': np.array([0])}})
-    with pytest.raises(TypeError, match="cannot be JSON-serialized"):
-        generate_pipeline_code(pipeline)
-
-    pipeline = MockBinaryPipelineTransformer({'My Custom Estimator': {'random_arg': pd.DataFrame()}})
-    with pytest.raises(TypeError, match="cannot be JSON-serialized"):
-        generate_pipeline_code(pipeline)
-
-    pipeline = MockBinaryPipelineTransformer({'My Custom Estimator': {'random_arg': ProblemTypes.BINARY}})
-    with pytest.raises(TypeError, match="cannot be JSON-serialized"):
-        generate_pipeline_code(pipeline)
-
-    pipeline = MockBinaryPipelineTransformer({'My Custom Estimator': {'random_arg': BinaryClassificationPipeline}})
-    with pytest.raises(TypeError, match="cannot be JSON-serialized"):
-        generate_pipeline_code(pipeline)
-
-    pipeline = MockBinaryPipelineTransformer({'My Custom Estimator': {'random_arg': Estimator}})
-    with pytest.raises(TypeError, match="cannot be JSON-serialized"):
-        generate_pipeline_code(pipeline)
-
-    pipeline = MockBinaryPipelineTransformer({'My Custom Estimator': {'random_arg': Imputer()}})
-    with pytest.raises(TypeError, match="cannot be JSON-serialized"):
-        generate_pipeline_code(pipeline)
+    pipeline = BinaryClassificationPipeline(component_graph, custom_name="Mock Binary Pipeline with Transformer",
+                                            parameters={'My Custom Estimator': {'random_arg': Imputer()}})
+    generated_pipeline_code = generate_pipeline_code(pipeline)
+    assert generated_pipeline_code == "from evalml.pipelines.binary_classification_pipeline import BinaryClassificationPipeline\n" \
+        "pipeline = BinaryClassificationPipeline(component_graph=['Imputer', CustomEstimator], " \
+        "parameters={'Imputer':{'categorical_impute_strategy': 'most_frequent', 'numeric_impute_strategy': 'mean', 'categorical_fill_value': None, 'numeric_fill_value': None}, " \
+        "'My Custom Estimator':{'random_arg': Imputer(categorical_impute_strategy='most_frequent', numeric_impute_strategy='mean', categorical_fill_value=None, numeric_fill_value=None), 'numpy_arg': []}}, " \
+        "custom_name='Mock Binary Pipeline with Transformer', random_seed=0)"
 
 
 def test_generate_code_pipeline():
-    class MockBinaryPipeline(BinaryClassificationPipeline):
-        component_graph = ['Imputer', 'Random Forest Classifier']
-        custom_hyperparameters = {
-            "Imputer": {
-                "numeric_impute_strategy": 'most_frequent'
-            }
+    custom_hyperparameters = {
+        "Imputer": {
+            "numeric_impute_strategy": 'most_frequent'
         }
+    }
 
-        def __init__(self, parameters, random_seed=0):
-            super().__init__(self.component_graph, parameters=parameters, custom_hyperparameters=self.custom_hyperparameters, random_seed=random_seed)
-
-    class MockRegressionPipeline(RegressionPipeline):
-        name = "Mock Regression Pipeline"
-        component_graph = ['Imputer', 'Random Forest Regressor']
-
-        def __init__(self, parameters, random_seed=0):
-            super().__init__(self.component_graph, parameters=parameters, custom_name=self.name, custom_hyperparameters=None, random_seed=random_seed)
-
-    mock_binary_pipeline = MockBinaryPipeline({})
-    expected_code = 'import json\n' \
-                    'from evalml.pipelines.binary_classification_pipeline import BinaryClassificationPipeline' \
-                    '\n\nclass MockBinaryPipeline(BinaryClassificationPipeline):' \
-                    '\n\tcomponent_graph = [\n\t\t\'Imputer\',\n\t\t\'Random Forest Classifier\'\n\t]' \
-                    '\n\tcustom_hyperparameters = {\'Imputer\': {\'numeric_impute_strategy\': \'most_frequent\'}}\n' \
-                    '\n\tdef __init__(self, parameters, random_seed=0):'\
-                    '\n\t\tsuper().__init__(self.component_graph, custom_name=self.custom_name, parameters=parameters, custom_hyperparameters=custom_hyperparameters, random_seed=random_seed)'\
-                    '\n\nparameters = json.loads("""{\n\t"Imputer": {\n\t\t"categorical_impute_strategy": "most_frequent",\n\t\t"numeric_impute_strategy": "mean",\n\t\t"categorical_fill_value": null,\n\t\t"numeric_fill_value": null\n\t},' \
-                    '\n\t"Random Forest Classifier": {\n\t\t"n_estimators": 100,\n\t\t"max_depth": 6,\n\t\t"n_jobs": -1\n\t}\n}""")\n' \
-                    'pipeline = MockBinaryPipeline(parameters)'
-    pipeline = generate_pipeline_code(mock_binary_pipeline)
-
+    binary_pipeline = BinaryClassificationPipeline(['Imputer', 'Random Forest Classifier'], custom_hyperparameters=custom_hyperparameters)
+    expected_code = "from evalml.pipelines.binary_classification_pipeline import BinaryClassificationPipeline\n" \
+        "pipeline = BinaryClassificationPipeline(component_graph=['Imputer', 'Random Forest Classifier'], " \
+        "parameters={'Imputer':{'categorical_impute_strategy': 'most_frequent', 'numeric_impute_strategy': 'mean', 'categorical_fill_value': None, 'numeric_fill_value': None}, " \
+        "'Random Forest Classifier':{'n_estimators': 100, 'max_depth': 6, 'n_jobs': -1}}, custom_hyperparameters={'Imputer':{'numeric_impute_strategy': 'most_frequent'}}, random_seed=0)"
+    pipeline = generate_pipeline_code(binary_pipeline)
     assert expected_code == pipeline
 
-    mock_regression_pipeline = MockRegressionPipeline({})
-    expected_code = 'import json\n' \
-                    'from evalml.pipelines.regression_pipeline import RegressionPipeline' \
-                    '\n\nclass MockRegressionPipeline(RegressionPipeline):' \
-                    '\n\tcomponent_graph = [\n\t\t\'Imputer\',\n\t\t\'Random Forest Regressor\'\n\t]\n\t' \
-                    'name = \'Mock Regression Pipeline\'\n\n' \
-                    '\tdef __init__(self, parameters, random_seed=0):'\
-                    '\n\t\tsuper().__init__(self.component_graph, custom_name=self.custom_name, parameters=parameters, custom_hyperparameters=custom_hyperparameters, random_seed=random_seed)'\
-                    '\n\nparameters = json.loads("""{\n\t"Imputer": {\n\t\t"categorical_impute_strategy": "most_frequent",\n\t\t"numeric_impute_strategy": "mean",\n\t\t"categorical_fill_value": null,\n\t\t"numeric_fill_value": null\n\t},' \
-                    '\n\t"Random Forest Regressor": {\n\t\t"n_estimators": 100,\n\t\t"max_depth": 6,\n\t\t"n_jobs": -1\n\t}\n}""")' \
-                    '\npipeline = MockRegressionPipeline(parameters)'
-    pipeline = generate_pipeline_code(mock_regression_pipeline)
+    regression_pipeline = RegressionPipeline(['Imputer', 'Random Forest Regressor'], custom_name="Mock Regression Pipeline")
+    expected_code = "from evalml.pipelines.regression_pipeline import RegressionPipeline\n" \
+        "pipeline = RegressionPipeline(component_graph=['Imputer', 'Random Forest Regressor'], parameters={'Imputer':{'categorical_impute_strategy': 'most_frequent', 'numeric_impute_strategy': 'mean', 'categorical_fill_value': None, 'numeric_fill_value': None}, " \
+        "'Random Forest Regressor':{'n_estimators': 100, 'max_depth': 6, 'n_jobs': -1}}, custom_name='Mock Regression Pipeline', random_seed=0)"
+    pipeline = generate_pipeline_code(regression_pipeline)
     assert pipeline == expected_code
 
-    mock_regression_pipeline_params = MockRegressionPipeline({"Imputer": {"numeric_impute_strategy": "most_frequent"}, "Random Forest Regressor": {"n_estimators": 50}})
-    expected_code_params = 'import json\n' \
-                           'from evalml.pipelines.regression_pipeline import RegressionPipeline' \
-                           '\n\nclass MockRegressionPipeline(RegressionPipeline):' \
-                           '\n\tcomponent_graph = [\n\t\t\'Imputer\',\n\t\t\'Random Forest Regressor\'\n\t]' \
-                           '\n\tname = \'Mock Regression Pipeline\'' \
-                           '\n\n\tdef __init__(self, parameters, random_seed=0):'\
-                           '\n\t\tsuper().__init__(self.component_graph, custom_name=self.custom_name, parameters=parameters, custom_hyperparameters=custom_hyperparameters, random_seed=random_seed)'\
-                           '\n\nparameters = json.loads("""{\n\t"Imputer": {\n\t\t"categorical_impute_strategy": "most_frequent",\n\t\t"numeric_impute_strategy": "most_frequent",\n\t\t"categorical_fill_value": null,\n\t\t"numeric_fill_value": null\n\t},' \
-                           '\n\t"Random Forest Regressor": {\n\t\t"n_estimators": 50,\n\t\t"max_depth": 6,\n\t\t"n_jobs": -1\n\t}\n}""")' \
-                           '\npipeline = MockRegressionPipeline(parameters)'
-    pipeline = generate_pipeline_code(mock_regression_pipeline_params)
+    regression_pipeline_with_params = RegressionPipeline(['Imputer', 'Random Forest Regressor'],
+                                                         custom_name="Mock Regression Pipeline",
+                                                         parameters={"Imputer": {"numeric_impute_strategy": "most_frequent"}, "Random Forest Regressor": {"n_estimators": 50}})
+    expected_code_params = "from evalml.pipelines.regression_pipeline import RegressionPipeline\n" \
+        "pipeline = RegressionPipeline(component_graph=['Imputer', 'Random Forest Regressor'], " \
+        "parameters={'Imputer':{'categorical_impute_strategy': 'most_frequent', 'numeric_impute_strategy': 'most_frequent', 'categorical_fill_value': None, 'numeric_fill_value': None}, " \
+        "'Random Forest Regressor':{'n_estimators': 50, 'max_depth': 6, 'n_jobs': -1}}, custom_name='Mock Regression Pipeline', random_seed=0)"
+    pipeline = generate_pipeline_code(regression_pipeline_with_params)
     assert pipeline == expected_code_params
 
 
@@ -756,7 +664,7 @@ def test_generate_code_nonlinear_pipeline_error(nonlinear_binary_pipeline_class)
         generate_pipeline_code(pipeline)
 
 
-def test_generate_code_pipeline_custom():
+def test_generate_code_pipeline_with_custom_components():
     class CustomTransformer(Transformer):
         name = "My Custom Transformer"
         hyperparameter_ranges = {}
@@ -781,69 +689,9 @@ def test_generate_code_pipeline_custom():
                              component_obj=None,
                              random_seed=random_seed)
 
-    class MockBinaryPipelineTransformer(BinaryClassificationPipeline):
-        name = "Mock Binary Pipeline with Transformer"
-        component_graph = [CustomTransformer, 'Random Forest Classifier']
-
-        def __init__(self, parameters, random_seed=0):
-            super().__init__(self.component_graph, parameters=parameters, custom_name=self.name, custom_hyperparameters=None, random_seed=random_seed)
-
-    class MockBinaryPipelineEstimator(BinaryClassificationPipeline):
-        name = "Mock Binary Pipeline with Estimator"
-        component_graph = ['Imputer', CustomEstimator]
-        custom_hyperparameters = {
-            'Imputer': {
-                'numeric_impute_strategy': 'most_frequent'
-            }
-        }
-
-        def __init__(self, parameters, random_seed=0):
-            super().__init__(self.component_graph, parameters=parameters, custom_name=self.name, custom_hyperparameters=None, random_seed=random_seed)
-
-    class MockAllCustom(BinaryClassificationPipeline):
-        name = "Mock All Custom Pipeline"
-        component_graph = [CustomTransformer, CustomEstimator]
-
-        def __init__(self, parameters, random_seed=0):
-            super().__init__(self.component_graph, parameters=parameters, custom_name=self.name, custom_hyperparameters=None, random_seed=random_seed)
-
-    mockBinaryTransformer = MockBinaryPipelineTransformer({})
-    expected_code = 'import json\n' \
-                    'from evalml.pipelines.binary_classification_pipeline import BinaryClassificationPipeline' \
-                    '\n\nclass MockBinaryPipelineTransformer(BinaryClassificationPipeline):' \
-                    '\n\tcomponent_graph = [\n\t\tCustomTransformer,\n\t\t\'Random Forest Classifier\'\n\t]' \
-                    '\n\tname = \'Mock Binary Pipeline with Transformer\'' \
-                    '\n\n\tdef __init__(self, parameters, random_seed=0):'\
-                    '\n\t\tsuper().__init__(self.component_graph, custom_name=self.custom_name, parameters=parameters, custom_hyperparameters=custom_hyperparameters, random_seed=random_seed)'\
-                    '\n\nparameters = json.loads("""{\n\t"Random Forest Classifier": {\n\t\t"n_estimators": 100,\n\t\t"max_depth": 6,\n\t\t"n_jobs": -1\n\t}\n}""")' \
-                    '\npipeline = MockBinaryPipelineTransformer(parameters)'
-    pipeline = generate_pipeline_code(mockBinaryTransformer)
-    assert pipeline == expected_code
-
-    mockBinaryPipeline = MockBinaryPipelineEstimator({})
-    expected_code = 'import json\n' \
-                    'from evalml.pipelines.binary_classification_pipeline import BinaryClassificationPipeline' \
-                    '\n\nclass MockBinaryPipelineEstimator(BinaryClassificationPipeline):' \
-                    '\n\tcomponent_graph = [\n\t\t\'Imputer\',\n\t\tCustomEstimator\n\t]' \
-                    '\n\tcustom_hyperparameters = {\'Imputer\': {\'numeric_impute_strategy\': \'most_frequent\'}}' \
-                    '\n\tname = \'Mock Binary Pipeline with Estimator\'' \
-                    '\n\n\tdef __init__(self, parameters, random_seed=0):'\
-                    '\n\t\tsuper().__init__(self.component_graph, custom_name=self.custom_name, parameters=parameters, custom_hyperparameters=custom_hyperparameters, random_seed=random_seed)'\
-                    '\n\nparameters = json.loads("""{\n\t"Imputer": {\n\t\t"categorical_impute_strategy": "most_frequent",\n\t\t"numeric_impute_strategy": "mean",\n\t\t"categorical_fill_value": null,\n\t\t"numeric_fill_value": null\n\t},' \
-                    '\n\t"My Custom Estimator": {\n\t\t"random_arg": false\n\t}\n}""")' \
-                    '\npipeline = MockBinaryPipelineEstimator(parameters)'
-    pipeline = generate_pipeline_code(mockBinaryPipeline)
-    assert pipeline == expected_code
-
-    mockAllCustom = MockAllCustom({})
-    expected_code = 'import json\n' \
-                    'from evalml.pipelines.binary_classification_pipeline import BinaryClassificationPipeline' \
-                    '\n\nclass MockAllCustom(BinaryClassificationPipeline):' \
-                    '\n\tcomponent_graph = [\n\t\tCustomTransformer,\n\t\tCustomEstimator\n\t]' \
-                    '\n\tname = \'Mock All Custom Pipeline\''\
-                    '\n\n\tdef __init__(self, parameters, random_seed=0):'\
-                    '\n\t\tsuper().__init__(self.component_graph, custom_name=self.custom_name, parameters=parameters, custom_hyperparameters=custom_hyperparameters, random_seed=random_seed)'\
-                    '\n\nparameters = json.loads("""{\n\t"My Custom Estimator": {\n\t\t"random_arg": false\n\t}\n}""")' \
-                    '\npipeline = MockAllCustom(parameters)'
-    pipeline = generate_pipeline_code(mockAllCustom)
+    mock_pipeline_with_custom_components = BinaryClassificationPipeline([CustomTransformer, CustomEstimator])
+    expected_code = "from evalml.pipelines.binary_classification_pipeline import BinaryClassificationPipeline\n" \
+        "pipeline = BinaryClassificationPipeline(component_graph=[CustomTransformer, CustomEstimator], " \
+        "parameters={'My Custom Estimator':{'random_arg': False}}, random_seed=0)"
+    pipeline = generate_pipeline_code(mock_pipeline_with_custom_components)
     assert pipeline == expected_code

@@ -11,7 +11,7 @@ import evalml.preprocessing
 import evalml.problem_types
 import evalml.utils
 import evalml.data_checks
-from evalml.automl import AutoMLSearch
+from evalml.automl import AutoMLSearch, search
 from evalml.utils import print_info
 with warnings.catch_warnings():
     warnings.simplefilter("ignore", FutureWarning)
@@ -22,4 +22,4 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings('ignore', 'The following selectors were not present in your DataTable')
 
 
-__version__ = '0.23.0'
+__version__ = '0.24.0'
