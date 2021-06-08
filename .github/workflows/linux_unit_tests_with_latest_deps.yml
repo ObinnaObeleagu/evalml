@@ -54,11 +54,16 @@ jobs:
           ! pip freeze | grep -E "xgboost|catboost|lightgbm|plotly|ipywidgets|category_encoders"
           exit $?
       - if: ${{ !matrix.core_dependencies }}
-        name: Installing Dependencies
+        name: Installing Dependencies and Prophet
         run: |
           pip install virtualenv
           virtualenv test_python -q
           source test_python/bin/activate
+          pip install cmdstanpy==0.9.68
+          PYTHON_LIB="/home/runner/work/evalml/evalml/test_python/lib/python${{ matrix.python_version }}/site-packages"
+          CMDSTAN_LIB="${PYTHON_LIB}/cmdstan-2.27.0"
+          python "${PYTHON_LIB}/cmdstanpy/install_cmdstan.py" -d "${PYTHON_LIB}"
+          CMDSTAN="${CMDSTAN_LIB}" STAN_BACKEND=CMDSTANPY pip install prophet
           make installdeps
           make installdeps-test
           pip freeze
@@ -75,6 +80,7 @@ jobs:
         name: Run unit tests
         run: |
           source test_python/bin/activate
+          pip list
           make git-test
       - if: ${{ matrix.codecov }}
         name: install coverage

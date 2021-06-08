@@ -65,6 +65,7 @@ Release Notes
         * Integrated ``ARIMARegressor`` into AutoML :pr:`2009`
         * Updated ``HighlyNullDataCheck`` to also perform a null row check :pr:`2222`
         * Set ``max_depth`` to 1 in calls to featuretools dfs :pr:`2231`
+        * Added ``ProphetRegressor`` to estimators :pr:`2242`
     * Fixes
         * Removed data splitter sampler calls during training :pr:`2253`
         * Set minimum required version for for pyzmq, colorama, and docutils :pr:`2254`
@@ -326,7 +327,6 @@ Release Notes
         * Addressed bug with ``partial_dependence`` and categorical data with more categories than grid resolution :pr:`1748`
         * Removed ``random_state`` arg from ``get_pipelines`` in ``AutoMLSearch`` :pr:`1719`
         * Pinned pyzmq at less than 22.0.0 till we add support :pr:`1756`
-        * Remove ``ProphetRegressor`` from main as windows tests were flaky :pr:`1764`
     * Changes
         * Updated components and pipelines to return ``Woodwork`` data structures :pr:`1668`
         * Updated ``clone()`` for pipelines and components to copy over random state automatically :pr:`1753`
@@ -360,6 +360,7 @@ Release Notes
         * Enhanced ``DelayedFeaturesTransformer`` to encode categorical features and targets before delaying them :pr:`1691`
         * Added 2-way dependence plots. :pr:`1690`
         * Added ability to directly iterate through components within Pipelines :pr:`1583`
+        * Added Facebook's Prophet as a time series regressor :pr:`1704`
     * Fixes
         * Fixed inconsistent attributes and added Exceptions to docs :pr:`1673`
         * Fixed ``TargetLeakageDataCheck`` to use Woodwork ``mutual_information`` rather than using Pandas' Pearson Correlation :pr:`1616`

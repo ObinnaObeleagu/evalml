@@ -16,6 +16,7 @@ from .gen_utils import (
     get_importable_subclasses,
     _rename_column_names_to_numeric,
     deprecate_arg,
+    suppress_stdout_stderr,
 )
 from .cli_utils import (
     get_evalml_root,

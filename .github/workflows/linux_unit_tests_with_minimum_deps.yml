@@ -49,6 +49,11 @@ jobs:
         name: install evalml with test dependencies, core dependencies, & optional requirements
         run: |
           source test_python/bin/activate
+          pip install cmdstanpy==0.9.68
+          PYTHON_LIB="/home/runner/work/evalml/evalml/test_python/lib/python${{ matrix.python_version }}/site-packages"
+          CMDSTAN_LIB="${PYTHON_LIB}/cmdstan-2.27.0"
+          python "${PYTHON_LIB}/cmdstanpy/install_cmdstan.py" -d "${PYTHON_LIB}"
+          CMDSTAN="${CMDSTAN_LIB}" STAN_BACKEND=CMDSTANPY pip install prophet
           pip install -e . --no-dependencies
           pip install -r evalml/tests/dependency_update_check/minimum_test_requirements.txt
           pip install -r evalml/tests/dependency_update_check/minimum_core_requirements.txt
