@@ -1,6 +1,7 @@
 catboost==0.26
 click==8.0.1
 cloudpickle==1.6.0
+cmdstanpy==0.9.68
 colorama==0.4.4
 dask==2021.6.0
 featuretools==0.24.1
