@@ -64,6 +64,8 @@ jobs:
           . $env:USERPROFILE\Miniconda3\shell\condabin\conda-hook.ps1
           conda activate curr_py
           python -m pip install --upgrade pip
+          conda install -c conda-forge cmdstanpy
+          conda install prophet
           python -m pip install .
           python -m pip install -r test-requirements.txt
           pip freeze
