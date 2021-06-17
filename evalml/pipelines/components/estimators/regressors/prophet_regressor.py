@@ -53,7 +53,10 @@ class ProphetRegressor(Estimator):
 
         parameters.update(kwargs)
 
-        p_error_msg = "prophet is not installed. Please install using `pip install cmdstanpy` and `pip install prophet`."
+        c_error_msg = "cmdstanpy is not installed. Please install using `pip install cmdstanpy`."
+        _ = import_or_raise("cmdstanpy", error_msg=c_error_msg)
+
+        p_error_msg = "prophet is not installed. Please install using `pip install prophet`."
         prophet = import_or_raise("prophet", error_msg=p_error_msg)
 
         prophet_regressor = prophet.Prophet(**parameters)

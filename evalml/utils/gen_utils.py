@@ -205,7 +205,7 @@ def get_importable_subclasses(base_class, used_in_automl=True):
         try:
             cls()
             classes.append(cls)
-        except (ImportError, MissingComponentError, TypeError):
+        except (ImportError, MissingComponentError, TypeError, ValueError):
             logger.debug(
                 f"Could not import class {cls.__name__} in get_importable_subclasses"
             )
