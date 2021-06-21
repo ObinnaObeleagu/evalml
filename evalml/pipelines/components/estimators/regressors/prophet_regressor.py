@@ -8,7 +8,7 @@ from evalml.model_family import ModelFamily
 from evalml.pipelines.components.estimators import Estimator
 from evalml.problem_types import ProblemTypes
 from evalml.utils import import_or_raise, infer_feature_types
-from evalml.utils.gen_utils import suppress_stdout_stderr
+from evalml.utils.gen_utils import classproperty, suppress_stdout_stderr
 
 
 class ProphetRegressor(Estimator):
@@ -129,3 +129,23 @@ class ProphetRegressor(Estimator):
         Returns array of 0's with len(1) as feature_importance is not defined for Prophet regressor.
         """
         return np.zeros(1)
+
+    @classproperty
+    def default_parameters(cls):
+        """Returns the default parameters for this component.
+
+        Our convention is that Component.default_parameters == Component().parameters.
+
+        Returns:
+            dict: default parameters for this component.
+        """
+
+        parameters = {
+            "changepoint_prior_scale": 0.05,
+            "seasonality_prior_scale": 10,
+            "holidays_prior_scale": 10,
+            "seasonality_mode": "additive",
+            "stan_backend": "CMDSTANPY",
+        }
+
+        return parameters
