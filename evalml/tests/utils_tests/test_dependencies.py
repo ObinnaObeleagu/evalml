@@ -33,6 +33,7 @@ def test_has_minimal_deps(
             (module == "sktime" and is_running_py_39_or_above)
             or (module == "pmdarima" and is_using_conda)
             or (module == "cmdstanpy" and is_using_windows)
+            or (module == "prophet" and is_using_windows)
         ):
             with pytest.raises(ModuleNotFoundError):
                 import_module(module)
