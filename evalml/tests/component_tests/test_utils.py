@@ -27,14 +27,14 @@ multiclass = pd.Series([0] * 800 + [1] * 150 + [2] * 50)
 
 
 def test_all_components(
-    has_minimal_dependencies, is_running_py_39_or_above, is_using_conda
+    has_minimal_dependencies, is_running_py_39_or_above, is_using_conda, is_using_windows
 ):
     if has_minimal_dependencies:
         n_components = 37
     elif is_using_conda or is_running_py_39_or_above:
         n_components = 48
     else:
-        if sys.platform in ["win32", "cygwin"]:
+        if is_using_windows:
             n_components = 49
         else:
             n_components = 50

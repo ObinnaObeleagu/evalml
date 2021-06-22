@@ -65,7 +65,9 @@ jobs:
           . $env:USERPROFILE\Miniconda3\shell\condabin\conda-hook.ps1
           conda activate curr_py
           python -m pip install --upgrade pip
-          python -m pip install .
+          pip freeze --exclude prophet --exclude cmdstanpy > windows_requirements.txt
+          python -m pip install -r windows-requirement.txt
+          echo "Executing test-requirements"
           python -m pip install -r test-requirements.txt
           pip freeze
       - name: Run unit tests
