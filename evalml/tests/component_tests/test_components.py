@@ -1293,8 +1293,8 @@ def test_estimators_accept_all_kwargs(
         params = estimator.get_params()
     else:
         params = estimator._component_obj.get_params()
-    if "random_state" in params:
-        del params["random_state"]
+        if "random_state" in params:
+            del params["random_state"]
     estimator_class(**params)
 
 

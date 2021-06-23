@@ -33,7 +33,9 @@ def test_all_components(
 ):
     if has_minimal_dependencies:
         n_components = 37
-    elif is_using_conda or is_running_py_39_or_above:
+    elif is_using_conda:
+        n_components = 48
+    elif is_running_py_39_or_above:
         n_components = 48
     else:
         n_components = 49 if is_using_windows else 50

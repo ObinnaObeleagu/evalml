@@ -35,7 +35,7 @@ jobs:
           virtualenv test_python -q
           source test_python/bin/activate
           python -m pip install --upgrade pip -q
-      - name: install evalml with test dependencies, core dependencies, & optional requirements
+      - name: Install evalml with test dependencies, core dependencies, & optional requirements
         run: |
           source test_python/bin/activate
           pip install cmdstanpy==0.9.68
