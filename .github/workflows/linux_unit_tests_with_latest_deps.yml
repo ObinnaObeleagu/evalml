@@ -76,8 +76,7 @@ jobs:
           CMDSTAN_LIB="${PYTHON_LIB}/cmdstan-2.27.0"
           python "${PYTHON_LIB}/cmdstanpy/install_cmdstan.py" -d "${PYTHON_LIB}"
           CMDSTAN="${CMDSTAN_LIB}"
-          STAN_BACKEND="CMDSTANPY"
-          pip install prophet
+          STAN_BACKEND=CMDSTANPY pip install prophet
           make installdeps
           make installdeps-test
           pip freeze
