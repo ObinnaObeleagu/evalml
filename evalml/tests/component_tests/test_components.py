@@ -507,7 +507,6 @@ def test_describe_component():
                 "holidays_prior_scale": 10,
                 "seasonality_mode": "additive",
                 "seasonality_prior_scale": 10,
-                "stan_backend": "CMDSTANPY",
             },
         }
     except ImportError:
