@@ -4,7 +4,12 @@ from .binary_classification_objective import BinaryClassificationObjective
 
 
 class LeadScoring(BinaryClassificationObjective):
-    """Lead scoring."""
+    """Lead scoring.
+
+    Arguments:
+        true_positives (int): Reward for a true positive. Defaults to 1.
+        false_positives (int): Cost for a false positive. Should be negative. Defaults to -1.
+    """
 
     name = "Lead Scoring"
     greater_is_better = True
@@ -13,22 +18,17 @@ class LeadScoring(BinaryClassificationObjective):
     is_bounded_like_percentage = False  # Range (-Inf, Inf)
 
     def __init__(self, true_positives=1, false_positives=-1):
-        """Create instance.
-
-        Arguments:
-            true_positives (int): Reward for a true positive
-            false_positives (int): Cost for a false positive. Should be negative.
-        """
         self.true_positives = true_positives
         self.false_positives = false_positives
 
-    def objective_function(self, y_true, y_predicted, X=None):
+    def objective_function(self, y_true, y_predicted, X=None, sample_weight=None):
         """Calculate the profit per lead.
 
         Arguments:
             y_predicted (pd.Series): Predicted labels
             y_true (pd.Series): True labels
             X (pd.DataFrame): Ignored.
+            sample_weight (pd.DataFrame): Ignored.
 
         Returns:
             float: Profit per lead

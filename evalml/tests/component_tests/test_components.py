@@ -421,6 +421,7 @@ def test_describe_component():
                 "max_depth": 3,
                 "min_child_weight": 1,
                 "n_estimators": 75,
+                "n_jobs": -1,
             },
         }
         assert xgb_regressor.describe(return_dict=True) == {
@@ -430,6 +431,7 @@ def test_describe_component():
                 "max_depth": 3,
                 "min_child_weight": 1,
                 "n_estimators": 75,
+                "n_jobs": -1,
             },
         }
     except ImportError:
@@ -446,6 +448,7 @@ def test_describe_component():
                 "max_depth": 6,
                 "bootstrap_type": None,
                 "silent": True,
+                "n_jobs": -1,
             },
         }
         assert cb_regressor.describe(return_dict=True) == {
@@ -457,6 +460,7 @@ def test_describe_component():
                 "max_depth": 6,
                 "bootstrap_type": None,
                 "silent": False,
+                "n_jobs": -1,
             },
         }
     except ImportError:
