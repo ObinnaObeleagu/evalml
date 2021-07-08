@@ -147,7 +147,6 @@ class ProphetRegressor(Estimator):
             "seasonality_prior_scale": 10,
             "holidays_prior_scale": 10,
             "seasonality_mode": "additive",
-            "stan_backend": "CMDSTANPY",
         }
 
         return parameters
