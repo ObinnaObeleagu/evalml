@@ -79,7 +79,7 @@ jobs:
           export STAN_BACKEND=CMDSTANPY
           make installdeps
           make installdeps-test
-          pip uninstall pystan
+          pip uninstall pystan -y
           pip freeze
       - name: Erase Coverage
         run: |
