@@ -14,4 +14,4 @@ imbalanced-learn>=0.8.0
 pmdarima==1.8.0
 sktime>=0.5.3;python_version<"3.9"
 cmdstanpy==0.9.68
-prophet>=1.0.1
+prophet>=1.0.1; platform_system != "Windows"

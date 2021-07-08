@@ -75,9 +75,11 @@ jobs:
           PYTHON_LIB="/home/runner/work/evalml/evalml/test_python/lib/python${{ matrix.python_version }}/site-packages"
           CMDSTAN_LIB="${PYTHON_LIB}/cmdstan-2.27.0"
           python "${PYTHON_LIB}/cmdstanpy/install_cmdstan.py" -d "${PYTHON_LIB}"
-          CMDSTAN="${CMDSTAN_LIB}" STAN_BACKEND=CMDSTANPY pip install prophet
+          export CMDSTAN="${CMDSTAN_LIB}"
+          export STAN_BACKEND=CMDSTANPY
           make installdeps
           make installdeps-test
+          pip uninstall pystan
           pip freeze
       - name: Erase Coverage
         run: |
