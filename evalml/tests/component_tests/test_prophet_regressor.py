@@ -42,7 +42,6 @@ def test_init_with_other_params():
         "seasonality_mode": "additive",
         "seasonality_prior_scale": 10,
         "uncertainty_samples": 0,
-        "stan_backend": "CMDSTANPY",
     }
 
 
@@ -60,7 +59,6 @@ def test_get_params(ts_data):
         "seasonality_prior_scale": 10,
         "holidays_prior_scale": 10,
         "seasonality_mode": "additive",
-        "stan_backend": "CMDSTANPY",
     }
 
 

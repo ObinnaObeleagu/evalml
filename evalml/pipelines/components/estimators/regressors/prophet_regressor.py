@@ -47,7 +47,6 @@ class ProphetRegressor(Estimator):
             "seasonality_prior_scale": seasonality_prior_scale,
             "holidays_prior_scale": holidays_prior_scale,
             "seasonality_mode": seasonality_mode,
-            "stan_backend": stan_backend,
         }
 
         parameters.update(kwargs)
