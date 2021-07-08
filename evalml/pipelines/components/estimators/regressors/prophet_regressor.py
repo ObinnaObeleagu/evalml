@@ -38,7 +38,6 @@ class ProphetRegressor(Estimator):
         holidays_prior_scale=10,
         seasonality_mode="additive",
         random_seed=0,
-        stan_backend="CMDSTANPY",
         **kwargs
     ):
         self.date_column = date_column
