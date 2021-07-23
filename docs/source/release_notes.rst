@@ -3,6 +3,7 @@ Release Notes
 **Future Release**
     * Enhancements
         * Added Gini coefficient as an objective :pr:`2544`
+        * Added components to extract features from ``URL`` and ``EmailAddress`` Logical Types :pr:`2550`
     * Fixes
     * Changes
         * Updated ``PipelineBase`` implementation for creating pipelines from a list of components :pr:`2549`
