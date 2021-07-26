@@ -71,13 +71,13 @@ jobs:
           pip install virtualenv
           virtualenv test_python -q
           source test_python/bin/activate
-          pip install cmdstanpy==0.9.68
+          time pip install cmdstanpy==0.9.68
           PYTHON_LIB="/home/runner/work/evalml/evalml/test_python/lib/python${{ matrix.python_version }}/site-packages"
           CMDSTAN_LIB="${PYTHON_LIB}/cmdstan-2.27.0"
-          python "${PYTHON_LIB}/cmdstanpy/install_cmdstan.py" -d "${PYTHON_LIB}"
+          time python "${PYTHON_LIB}/cmdstanpy/install_cmdstan.py" -d "${PYTHON_LIB}"
           export CMDSTAN="${CMDSTAN_LIB}"
           export STAN_BACKEND=CMDSTANPY
-          make installdeps
+          time make installdeps
           make installdeps-test
           pip uninstall pystan -y
           pip freeze
