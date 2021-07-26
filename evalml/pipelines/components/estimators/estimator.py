@@ -1,5 +1,7 @@
 from abc import abstractmethod
 
+from pandas.core.indexes import range
+
 from evalml.exceptions import MethodPropertyNotFoundError
 from evalml.model_family import ModelFamily
 from evalml.pipelines.components import ComponentBase
@@ -26,6 +28,10 @@ class Estimator(ComponentBase):
     # We can't use the inspect module to dynamically determine this because of issue 1582
     predict_uses_y = False
     model_family = ModelFamily.NONE
+    """ModelFamily.NONE"""
+
+    modifies_features = True
+    modifies_target = False
 
     @property
     @classmethod
@@ -67,6 +73,8 @@ class Estimator(ComponentBase):
         """
         try:
             X = infer_feature_types(X)
+            if isinstance(X.columns, range.RangeIndex):
+                X.columns = [x for x in X.columns]
             predictions = self._component_obj.predict(X)
         except AttributeError:
             raise MethodPropertyNotFoundError(

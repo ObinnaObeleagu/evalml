@@ -1,7 +1,7 @@
 plotly==5.0.0
 kaleido==0.1.0
 ipywidgets==7.5
-xgboost==1.1.0
+xgboost==1.4.2
 catboost==0.20
 lightgbm==2.3.1
 matplotlib==3.3.3
@@ -14,3 +14,4 @@ pmdarima==1.8.0
 sktime==0.5.3
 cmdstanpy==0.9.68; platform_system != "Windows"
 prophet>=1.0.1; platform_system != "Windows"
+sktime==0.7.0

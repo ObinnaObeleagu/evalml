@@ -5,6 +5,7 @@ from unittest.mock import PropertyMock, patch
 
 import numpy as np
 import pandas as pd
+import py
 import pytest
 import woodwork as ww
 from sklearn import datasets
@@ -287,6 +288,7 @@ def text_df():
             ],
         }
     )
+    df.ww.init(logical_types={"col_1": "NaturalLanguage", "col_2": "NaturalLanguage"})
     yield df
 
 
@@ -1296,3 +1298,10 @@ class _AutoMLTestEnv:
 @pytest.fixture
 def AutoMLTestEnv():
     return _AutoMLTestEnv
+
+
+@pytest.fixture
+def tmpdir(tmp_path):
+    dir = py.path.local(tmp_path)
+    yield dir
+    dir.remove(ignore_errors=True)

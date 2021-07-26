@@ -1,6 +1,6 @@
 import os
 import warnings
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 from itertools import product
 from unittest.mock import MagicMock, PropertyMock, patch
 
@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import pytest
 import woodwork as ww
+from joblib import hash as joblib_hash
 from sklearn.model_selection import KFold, StratifiedKFold
 from skopt.space import Categorical, Integer, Real
 
@@ -3076,6 +3077,7 @@ def test_search_with_text(AutoMLTestEnv):
             ],
         }
     )
+    X.ww.init(logical_types={"col_1": "NaturalLanguage", "col_2": "NaturalLanguage"})
     y = [0, 1, 1, 0, 1, 0]
     automl = AutoMLSearch(
         X_train=X, y_train=y, problem_type="binary", optimize_thresholds=False
@@ -3133,6 +3135,7 @@ def test_search_with_text_and_ensembling(
 
     if df_text:
         X = X_with_text
+        X.ww.init(logical_types={"col_1": "NaturalLanguage"})
     else:
         X = X_no_text
     if problem_type == "binary":
@@ -4787,3 +4790,116 @@ def test_automl_thresholding_train_pipelines(mock_objective, threshold, X_y_bina
     else:
         mock_objective.assert_not_called()
         assert all([p.threshold is None for p in pipes.values()])
+
+
+@pytest.mark.parametrize("columns", [[], ["unknown_col"], ["unknown1, unknown2"]])
+def test_automl_drop_unknown_columns(columns, AutoMLTestEnv, X_y_binary, caplog):
+    X, y = X_y_binary
+    X = pd.DataFrame(X)
+    for col in columns:
+        X[col] = pd.Series(range(len(X)))
+    X.ww.init()
+    X.ww.set_types({col: "Unknown" for col in columns})
+    automl = AutoMLSearch(
+        X_train=X,
+        y_train=y,
+        problem_type="binary",
+        optimize_thresholds=False,
+        max_batches=2,
+    )
+    env = AutoMLTestEnv("binary")
+    with env.test_context(score_return_value={automl.objective.name: 1.0}):
+        automl.search()
+    if not len(columns):
+        for pipeline in automl.allowed_pipelines:
+            assert "Drop Columns Transformer" not in pipeline.name
+        assert "because they are of 'Unknown'" not in caplog.text
+        return
+
+    assert "because they are of 'Unknown'" in caplog.text
+    for pipeline in automl.allowed_pipelines:
+        assert pipeline.get_component("Drop Columns Transformer")
+        assert "Drop Columns Transformer" in pipeline.parameters
+        assert pipeline.parameters["Drop Columns Transformer"] == {"columns": columns}
+
+    all_drop_column_params = []
+    for _, row in automl.full_rankings.iterrows():
+        if "Baseline" not in row.pipeline_name:
+            all_drop_column_params.append(
+                row.parameters["Drop Columns Transformer"]["columns"]
+            )
+    assert all(param == columns for param in all_drop_column_params)
+
+
+@pytest.mark.parametrize(
+    "automl_type",
+    [
+        ProblemTypes.BINARY,
+        ProblemTypes.MULTICLASS,
+        ProblemTypes.REGRESSION,
+        ProblemTypes.TIME_SERIES_REGRESSION,
+        ProblemTypes.TIME_SERIES_BINARY,
+        ProblemTypes.TIME_SERIES_MULTICLASS,
+    ],
+)
+def test_data_splitter_gives_pipelines_same_data(
+    automl_type, AutoMLTestEnv, X_y_binary, X_y_multi, X_y_regression
+):
+    problem_configuration = None
+    if automl_type == ProblemTypes.BINARY:
+        X, y = X_y_binary
+    elif automl_type == ProblemTypes.MULTICLASS:
+        X, y = X_y_multi
+    elif automl_type == ProblemTypes.REGRESSION:
+        X, y = X_y_regression
+    elif automl_type == ProblemTypes.TIME_SERIES_REGRESSION:
+        problem_configuration = {"gap": 1, "max_delay": 1, "date_index": 0}
+        X, y = X_y_regression
+    else:
+        problem_configuration = {"gap": 1, "max_delay": 1, "date_index": 0}
+        X, y = X_y_binary
+
+    automl = AutoMLSearch(
+        X_train=X,
+        y_train=y,
+        problem_type=automl_type,
+        max_batches=1,
+        n_jobs=1,
+        problem_configuration=problem_configuration,
+    )
+    n_splits = automl.data_splitter.n_splits
+    env = AutoMLTestEnv(automl_type)
+    with env.test_context(score_return_value={automl.objective.name: 1.0}):
+        automl.search()
+    n_pipelines_evaluated = len(automl.results["pipeline_results"])
+    assert n_pipelines_evaluated > 1
+
+    # current automl algo trains each pipeline using 3-fold CV for "small" datasets (i.e. test data above)
+    # therefore, each pipeline should recieve an identical set of three training-validation splits
+    X_fit_hashes, y_fit_hashes = defaultdict(set), defaultdict(set)
+    X_score_hashes, y_score_hashes = defaultdict(set), defaultdict(set)
+    for evaluation_index in range(0, n_pipelines_evaluated * n_splits, n_splits):
+        for fold_index in range(n_splits):
+            fold_fit_X, fold_fit_y = env.mock_fit.call_args_list[
+                evaluation_index + fold_index
+            ][0]
+            fold_score_X, fold_score_y = env.mock_score.call_args_list[
+                evaluation_index + fold_index
+            ][0]
+            X_fit_hashes[fold_index].add(joblib_hash(fold_fit_X))
+            y_fit_hashes[fold_index].add(joblib_hash(fold_fit_y))
+            X_score_hashes[fold_index].add(joblib_hash(fold_score_X))
+            y_score_hashes[fold_index].add(joblib_hash(fold_score_y))
+
+    for data_hash_dictionary in [
+        X_fit_hashes,
+        y_fit_hashes,
+        X_score_hashes,
+        y_score_hashes,
+    ]:
+        assert (
+            len(data_hash_dictionary) == n_splits
+        ), f"We should have hashes for exactly {n_splits} splits"
+        assert all(
+            len(data_hash_dictionary[i]) == 1 for i in range(n_splits)
+        ), "There should only be one hash per split."
